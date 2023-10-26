@@ -20,8 +20,6 @@ class Mouse(pygame.sprite.Sprite):
     def move(self):
         pressed_key = pygame.key.get_pressed()
 
-        print(self.__rect.bottom)
-
         if self.__rect.top != 8:
             if pressed_key[K_UP]:
                 self.__rect.move_ip(0, -48)
