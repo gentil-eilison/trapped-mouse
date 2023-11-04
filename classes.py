@@ -2,6 +2,22 @@ import pygame
 from pygame.locals import *
 
 
+class Wall(pygame.sprite.Sprite):
+    def __init__(self, center: tuple[int]):
+        super().__init__()
+        self.__image = pygame.image.load("sprites/wall48.gif")
+        self.__rect = self.__image.get_rect()
+        self.__rect.center = center
+    
+    @property
+    def image(self):
+        return self.__image
+    
+    @property
+    def rect(self):
+        return self.__rect
+
+
 class Mouse(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
