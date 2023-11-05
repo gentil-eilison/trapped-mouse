@@ -2,6 +2,22 @@ import pygame
 from pygame.locals import *
 
 
+class Path(pygame.sprite.Sprite):
+    def __init__(self, center: tuple[int]):
+        super().__init__()
+        self.__image = pygame.image.load("sprites/path48.jpg")
+        self.__rect = self.__image.get_rect()
+        self.__rect.center = center
+    
+    @property
+    def image(self):
+        return self.__image
+    
+    @property
+    def rect(self):
+        return self.__rect
+
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self, center: tuple[int]):
         super().__init__()
@@ -19,11 +35,11 @@ class Wall(pygame.sprite.Sprite):
 
 
 class Mouse(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, center: tuple[int]):
         super().__init__()
         self.__image = pygame.image.load("sprites/mouse32.png")
         self.__rect = self.__image.get_rect()
-        self.__rect.center = (24, 24)
+        self.__rect.center = center
     
     @property
     def image(self):
