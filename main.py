@@ -1,17 +1,17 @@
+import time
 import pygame, sys
 from pygame.locals import *
 from constants import *
 
-from classes import Mouse, Wall, Path, Cell, Stack
+from classes import Mouse, Wall, Path, Cell, Stack, Cheese
 
 
 maze_layout = [
-    [1, 1, 3, 1, 1],
-    [1, 0, 0, 1, 1],
-    [1, 0, 0, 0, 1],
-    [1, 0, 1, 1, 1],
-    [1, 0, 0, 2, 1],
-    [1, 1, 1, 1, 1]
+    [1, 1, 3, 1],
+    [1, 0, 0, 0],
+    [1, 0, 1, 1],
+    [1, 0, 2, 1],
+    [1, 1, 1, 1]
 ]
 
 class Game:
@@ -42,7 +42,12 @@ class Game:
         left_cell_coordinates = mouse_coordinates[0], mouse_coordinates[1] - 48
         right_cell_coordinates = mouse_coordinates[0], mouse_coordinates[1] + 48
 
-        next_cells = dict()
+        next_cells = dict(
+            top=Cell(0, 0, color=BLACK_COLOR),
+            left=Cell(0, 0, color=BLACK_COLOR),
+            right=Cell(0, 0, color=BLACK_COLOR),
+            bottom=Cell(0, 0, color=BLACK_COLOR)
+        )
 
         for cell in self.__maze_cells:
             if (cell.top, cell.left) == top_cell_coordinates:
@@ -66,11 +71,11 @@ class Game:
                     pygame.quit()
                     sys.exit()
 
-            self.__display_surf.fill(Color("#2D2D2D"))    
+            self.__display_surf.fill(Color("#2D2D2D"))
 
             for entity in self.__all_sprites:
                 self.__display_surf.blit(entity.image, entity.rect)
-                if not isinstance(entity, (Wall, Path)):
+                if not isinstance(entity, (Wall, Path, Cheese)):
                     next_cells = self._find_next_cells((current_cell.top, current_cell.left))
                     if next_cells["right"].can_move_to_cell():
                         self.__mouse.move_right()
@@ -88,10 +93,12 @@ class Game:
                         self.__mouse.move_top()
                         next_cells["top"].visited = True
                         self.__maze_stack.append(next_cells["top"])
-            # hit_wall = pygame.sprite.spritecollideany(self.__mouse, self.__walls_sprites)
-            # if hit_wall:
-            #     pygame.display.update()
-
+                    else:
+                        previous_cell = self.__maze_stack.pop()
+                        self.__mouse.rect.centery, self.__mouse.rect.centerx = previous_cell.top, previous_cell.left
+                    
+                    current_cell = self.__get_mouse_current_cell()
+            time.sleep(0.2)
             pygame.display.update()
             self.__frames_per_sec.tick(FPS)
         
@@ -108,12 +115,12 @@ class Game:
                     wall = Wall((column_position, row_position))
                     self.__walls_sprites.add(wall)
                     self.__all_sprites.add(wall)
-                    self.__maze_cells.append(Cell(column_position, row_position, color=BLACK_COLOR))
+                    self.__maze_cells.append(Cell(row_position, column_position, color=BLACK_COLOR))
                 elif column_value == 0:
                     self.__all_sprites.add(
                         Path((column_position, row_position))
                     )
-                    self.__maze_cells.append(Cell(column_position, row_position, color=WHITE_COLOR))
+                    self.__maze_cells.append(Cell(row_position, column_position, color=WHITE_COLOR))
                 elif column_value == 2:
                     mouse_row_position = row_position
                     mouse_column_position = column_position
@@ -124,7 +131,10 @@ class Game:
                     self.__all_sprites.add(
                         Path((column_position, row_position))
                     )
-                    self.__maze_cells.append(Cell(column_position, row_position, exit=True, color=WHITE_COLOR))
+                    self.__all_sprites.add(
+                        Cheese((column_position, row_position))
+                    )
+                    self.__maze_cells.append(Cell(row_position, column_position, exit=True, color=WHITE_COLOR))
                 
                 column_position += 48
 

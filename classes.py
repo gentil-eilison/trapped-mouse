@@ -3,6 +3,22 @@ from pygame.locals import *
 from constants import BLACK_COLOR
 
 
+class Cheese(pygame.sprite.Sprite):
+    def __init__(self, center: tuple[int]):
+        super().__init__()
+        self.__image = pygame.image.load("sprites/cheese32.png")
+        self.__rect = self.__image.get_rect()
+        self.__rect.center = center
+
+    @property
+    def image(self):
+        return self.__image
+    
+    @property
+    def rect(self):
+        return self.__rect
+
+
 class Path(pygame.sprite.Sprite):
     def __init__(self, center: tuple[int]):
         super().__init__()
@@ -70,24 +86,6 @@ class Mouse(pygame.sprite.Sprite):
     def move_bottom(self) -> None:
         self.__rect.move_ip(0, 48)
 
-    # def move(self):
-    #     pressed_key = pygame.key.get_pressed()
-
-    #     if self.__rect.top != 8:
-    #         if pressed_key[K_UP]:
-    #             self.__rect.move_ip(0, -48)
-
-    #     if self.__rect.bottom != 184:
-    #         if pressed_key[K_DOWN]:
-    #             self.__rect.move_ip(0, 48)
-
-    #     if self.__rect.left != 8:
-    #         if pressed_key[K_LEFT]:
-    #             self.__rect.move_ip(-48, 0)
-    #     if self.__rect.right < 168:
-    #         if pressed_key[K_RIGHT]:
-    #             self.__rect.move_ip(48, 0)
-
 
 class Stack:
     def __init__(self):
@@ -98,7 +96,7 @@ class Stack:
     
     def pop(self):
         try:
-            self.__stack.pop()
+            return self.__stack.pop()
         except IndexError:
             print("Stack is empty")
     
