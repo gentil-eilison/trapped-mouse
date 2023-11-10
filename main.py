@@ -7,11 +7,17 @@ from classes import Mouse, Wall, Path, Cell, Stack, Cheese
 
 
 maze_layout = [
-    [1, 1, 3, 1],
-    [1, 0, 0, 0],
-    [1, 0, 1, 1],
-    [1, 0, 2, 1],
-    [1, 1, 1, 1]
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+    [1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1],
+    [3, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
+    [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+    [1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1],
+    [1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1],
+    [1, 0, 1, 2, 1, 0, 1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
 
 class Game:
@@ -98,7 +104,7 @@ class Game:
                         self.__mouse.rect.centery, self.__mouse.rect.centerx = previous_cell.top, previous_cell.left
                     
                     current_cell = self.__get_mouse_current_cell()
-            time.sleep(0.2)
+            time.sleep(0.3)
             pygame.display.update()
             self.__frames_per_sec.tick(FPS)
         
