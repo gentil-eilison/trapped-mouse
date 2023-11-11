@@ -1,3 +1,4 @@
+import re
 import time
 import pygame, sys
 from pygame.locals import *
@@ -24,12 +25,39 @@ class Game:
     def __init__(self):
         self.__display_surf = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption(GAME_TITLE)
-        self.__mouse = None
         self.__frames_per_sec = pygame.time.Clock()
-        self.__all_sprites = pygame.sprite.Group()
+        
         self.__maze_cells = list()
         self.__maze_stack = Stack()
+        self.__maze_layout: list[list[int]] = list()
+
+        self.__mouse = None
+        self.__all_sprites = pygame.sprite.Group()
         self.__walls_sprites = pygame.sprite.Group()
+    
+    def __read_maze_txt(self, path):
+        with open(path, mode="r") as file:
+            lines = file.read()
+            lines = re.sub(r"e", "3", lines)
+            lines = re.sub(r"m", "2", lines)
+            
+            dimensions = re.findall(r"\d+? \d+", lines)
+            dimensions = [int(size) for size in dimensions.pop().split()]
+            rows_count, cols_count = dimensions
+
+            search_lines_expr = r"\d{" + str(cols_count) + r"}"
+            lines = re.findall(search_lines_expr, lines, flags=re.MULTILINE)
+            
+            if len(lines) != rows_count:
+                raise Exception("Invalid maze format")
+        
+            maze_layout = [re.findall(r"\d",value) for value in lines]
+            
+            for pos, layout in enumerate(maze_layout):
+                maze_layout[pos] = list(map(lambda num_str: int(num_str), layout))
+            
+            self.__maze_layout = maze_layout
+
 
     def __get_cell_by_position(self, coordinates: tuple[int]) -> Cell:
         for cell in self.__maze_cells:
@@ -66,9 +94,10 @@ class Game:
                 next_cells["bottom"] = cell
         return next_cells
 
-    def run(self, maze_layout):
+    def run(self, maze_txt_path: str):
         pygame.init()
-        self.create_maze(maze_layout)
+        self.__read_maze_txt(maze_txt_path)
+        self.create_maze()
         current_cell = self.__get_mouse_current_cell()
         self.__maze_stack.append(current_cell)
         while not current_cell.exit:
@@ -108,14 +137,13 @@ class Game:
             pygame.display.update()
             self.__frames_per_sec.tick(FPS)
         
-    def create_maze(self, maze_layout: list[list]):
-
+    def create_maze(self):
         row_position = 24
         column_position = 24
         mouse_row_position = None
         mouse_column_position = None
 
-        for _, row_value in enumerate(maze_layout):
+        for _, row_value in enumerate(self.__maze_layout):
             for _, column_value in enumerate(row_value):
                 if column_value == 1:
                     wall = Wall((column_position, row_position))
@@ -154,4 +182,4 @@ class Game:
 
 if __name__ == "__main__":
     game = Game()
-    game.run(maze_layout)
+    game.run("slide_maze.txt")
