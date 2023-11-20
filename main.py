@@ -129,9 +129,13 @@ class Game:
                         next_cells["top"].visited = True
                         self.__maze_stack.append(next_cells["top"])
                     else:
-                        previous_cell = self.__maze_stack.pop()
-                        self.__mouse.rect.centery, self.__mouse.rect.centerx = previous_cell.top, previous_cell.left
-                    
+                        try:
+                            previous_cell = self.__maze_stack.pop()
+                            self.__mouse.rect.centery, self.__mouse.rect.centerx = previous_cell.top, previous_cell.left
+                        except AttributeError:
+                            print("Labirinto sem saída!")
+                            pygame.quit()
+                            sys.exit()
                     current_cell = self.__get_mouse_current_cell()
             time.sleep(0.3)
             pygame.display.update()
